@@ -1,4 +1,5 @@
 # TODO LIST
+
 ## Gameplay TODOs:
 
 1.  Only two users can play at the same time.
@@ -17,3 +18,9 @@
 4.  Toggle the TurnPlayer
 5.  When TurnPlayer changes, flip both clients' toggles (prevents cheating).
 6.  Keep a history of moves in case of a fault or desync.
+
+## Styling
+
+1. Animate the buttons when hovered over.
+2. Border on click.
+3. 

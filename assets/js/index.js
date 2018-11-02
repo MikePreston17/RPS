@@ -112,6 +112,16 @@ const getMyIPAsync = async () => await getMyIP();
 
 const getMyIP = () => new Promise((resolve, reject) => $.getJSON('https://ipapi.co/json', data => resolve(data.ip)))
 
+// const getMyIP = () => new Promise((resolve, reject) => {
+//     $.ajax({
+//         url: 'https://ipapi.co/json',
+//         method: "GET"
+//     }).then(data => {
+//         console.log('data: ', data);
+//         resolve(data.ip);
+//     })
+// })
+
 var wait = ms => new Promise((r, j) => {
     setTimeout(r, ms)
 })
