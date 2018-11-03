@@ -51,8 +51,8 @@ function init() {
                 Choice: null,
             }
 
-            clearAllRooms(); //todo: remove before prod
-            clearChat(); //todo: remove before prod
+            // clearAllRooms(); //todo: remove before prod
+            // clearChat(); //todo: remove before prod
 
             addPlayerToRoom(player, roomName);
             // addCPUToRoom(roomName);

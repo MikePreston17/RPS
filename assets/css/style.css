@@ -17,3 +17,7 @@
 	span#chat-history {
 	    max-height: 200px;
 	}
+
+	body {
+	    align-content: center;
+	}

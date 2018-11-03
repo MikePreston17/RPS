@@ -15,9 +15,6 @@
     > No more than 2 players per room.
     > Client cannot enter more than 1 room (scan rooms before entering one).
 3.  Add the userId (connectionId) to a room.
-4.  Toggle the TurnPlayer
-5.  When TurnPlayer changes, flip both clients' toggles (prevents cheating).
-6.  Keep a history of moves in case of a fault or desync.
 
 ## Styling
 
