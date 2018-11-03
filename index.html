@@ -8,36 +8,55 @@
     <title>Firebase RPS</title>
 
     <!-- fontawesome -->
-    <script defer src="https://use.fontawesome.com/releases/v5.4.2/js/regular.js" integrity="sha384-Uj7q9rRb3eJNp0j1kXwOBgEWDGbAiJ7Dcuz4hLRQdtza6pawbo/Bmwgr58THzHyR"
+
+    <!-- All -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+        crossorigin="anonymous">
+
+    <!-- Regular only -->
+    <!-- <script defer src="https://use.fontawesome.com/releases/v5.4.2/js/regular.js" integrity="sha384-Uj7q9rRb3eJNp0j1kXwOBgEWDGbAiJ7Dcuz4hLRQdtza6pawbo/Bmwgr58THzHyR"
         crossorigin="anonymous"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.4.2/js/fontawesome.js" integrity="sha384-n1qPouQQJ9VNZnZeNZWSDiclpIOJwZBS2bkD6rEX+DTmMXTKXBVCZw2cGbU/I17z"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous"></script> -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" />
+
+    <!-- Font family -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,700">
+
+    <!-- My styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
 
 </head>
 
 <body>
-    <h1>Firey RPS!</h1>
-    <!-- <button>
-        <i class="fa fa-hand-scissors">button</i>
-    </button> -->
-    <div>
-        <h2 id="watchers"></h2>
-        <ul id="who-is-here">
-            <!-- add lis here -->
-        </ul>
+
+    <div id="main" class="container">
+        <div id="scoreboard" class="jumbotron">
+            <h1>Firey RPS!</h1>
+            <h3 id="player-choice"></h3>
+            <h3 id="opponent-choice"></h3>
+        </div>
+
+        <!-- <button><i class="fas fa-hand-rock" aria-hidden="true"></i></button>
+        <button><i class="fas fa-hand-paper" aria-hidden="true"></i></button>
+        <button><i class="fas fa-hand-scissors" aria-hidden="true"></i></button>
+
+        <br> -->
+
+        <button alt="rock"><i class="far fa-hand-rock" aria-hidden="true"></i></button>
+        <button alt="paper"><i class="far fa-hand-paper" aria-hidden="true"></i></button>
+        <button alt="scissors"><i class="far fa-hand-scissors" aria-hidden="true"></i></button>
+
+        <script src="https://www.gstatic.com/firebasejs/5.5.6/firebase.js"></script>
+
+        <script src="assets/js/index.js"></script>
+
     </div>
-    <br>
-    <!-- <div id="opponent-hand"></div>
-    <br>
-    <div id="player-hand"></div>
-    <br> -->
-    <div id="score"></div>
-
-    <script src="https://www.gstatic.com/firebasejs/5.5.6/firebase.js"></script>
-
-    <script src="assets/js/index.js"></script>
 
 </body>
 

@@ -23,4 +23,4 @@
 
 1. Animate the buttons when hovered over.
 2. Border on click.
-3. 
+3. Make the buttons clickable cards instead.
