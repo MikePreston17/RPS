@@ -92,10 +92,11 @@ function init() {
                         error => {
                             if (error) console.log('could not disconnect: ', error);
                         })
+                    //find ref to the current player and remove him.
 
-                    roomsRef.child(player.name).onDisconnect().update({
-                        status: "rq"
-                    })
+                    // roomsRef.child().onDisconnect().update({
+                    //     status: "rq"
+                    // })
                 }
             });
         })
