@@ -45,10 +45,15 @@ function init() {
 
     var clientIP;
 
+    //Send chat message:
     $('#send').on('click', event => {
         event.preventDefault();
         send();
     });
+
+    // $(document.ready(function () {
+    //     $(window).unload(_ => playerExits());
+    // }));
 
     getMyIP().then(result => {
 
@@ -91,12 +96,11 @@ function init() {
                     connectionsRef.onDisconnect().remove(
                         error => {
                             if (error) console.log('could not disconnect: ', error);
-                        })
+                        }
+                    )
+
                     //find ref to the current player and remove him.
 
-                    // roomsRef.child().onDisconnect().update({
-                    //     status: "rq"
-                    // })
                 }
             });
         })
@@ -123,9 +127,10 @@ function init() {
             currentRoom.on('value', snapshot => room.playerCount = snapshot.numChildren())
             currentRoom.on('child_added', nextPlayer => {
 
-                console.log('next player: ', nextPlayer.val());
+                // console.log('next player: ', nextPlayer.val());
                 //TODO: on NEW child added,
                 let playerIP = nextPlayer.val();
+
                 console.log({
                     playerIP,
                     numPlayers: room.playerCount,
@@ -142,6 +147,8 @@ function init() {
         })
         .then(_ => roomsRef.on("value", snapshot => console.log('rooms snapshot() ', snapshot.val())))
 }
+
+
 
 $(document).on('click', "button", function () {
 
@@ -163,6 +170,11 @@ $(document).on('click', "button", function () {
 
     updatePlayer(player);
 })
+
+function playerExits() {
+    let currentRoom = roomsRef.child(room.name);
+    currentRoom.child(player.name).remove(); //remove this player from the room.
+}
 
 function renderNameEntryForm() {
     //<!-- TODO: only enable this once IFF the user's IP cannot be found in the database -->
@@ -209,10 +221,10 @@ const renderMessage = (message) => {
 const updatePlayer = (player) => {
     if (!player.Choice) return;
 
-    let r = roomsRef.child(room.name);
-    let c = player.ip.replace(ipRegex, '_');
+    let currentRoom = roomsRef.child(room.name);
+    // let c = player.ip.replace(ipRegex, '_');
     //   console.log('child: ', c);
-    let playerRef = r.child(c);
+    let playerRef = currentRoom.child(player.name);
     // console.log('player ref: ', playerRef);
     console.log(player);
     playerRef.update(player);
@@ -256,6 +268,8 @@ const send = async () => {
     speak(box.val());
     box.val('');
 };
+
+
 
 const clearAllRooms = async () => roomsRef.remove();
 const clearChat = async () => chatRef.child('posts').remove();
