@@ -57,7 +57,9 @@ function init() {
 
             // console.log('client ip: ', clientIP);
 
-            let playerName = createName();
+            let playerName = sessionStorage.getItem("name") || createName();
+            sessionStorage.setItem('name', playerName)
+            console.log('ls: ', sessionStorage);
 
             player = {
                 name: playerName,
@@ -84,7 +86,7 @@ function init() {
 
                     connectionsRef
                         .child(player.name)
-                        .set({
+                        .push({
                             ip: clientIP,
                             name: player.name
                         });
@@ -223,15 +225,14 @@ const updatePlayer = (player) => {
 const addPlayerToRoom = (player, roomName) => {
 
     //todo: check number of players in room by how many children on the room's key.
-    roomsRef.child(roomName)
+
     // if 0 or 1 already, add.
     // if 2, find new room.
 
-    var room = roomsRef.child(roomName);
-    // let keyHappyIP = player.ip.replace(ipRegex, '_');
 
-    room.child(player.name)
-        .set(player);
+    roomsRef.child(roomName)
+        .child(player.name)
+        .push(player);
 }
 
 const send = async () => {
