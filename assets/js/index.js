@@ -54,33 +54,27 @@ function init() {
 
         }).then(_ => {
             // track connected user:
-            clients
-                .on("value", snapshot => {
+            clients.on("value", snapshot => {
 
-                    if (snapshot.val() && clientIP) {
-                        //Adding the user's IP address to prevent multiple tabs.
-                        console.log('uip: ', clientIP);
+                if (snapshot.val() && clientIP) {
+                    //Adding the user's IP address to prevent multiple tabs.
+                    let keyHappyIP = clientIP.replace(ipRegex, '_');
 
-                        // var connection = connectionsRef.push({
-                        //     uip: clientIP
-                        // });
+                    console.table([clientIP, keyHappyIP]);
 
-                        let keyHappyIP = clientIP.replace(ipRegex, '_');
-                        console.log('key: ', keyHappyIP);
+                    connectionsRef
+                        .child(keyHappyIP)
+                        .set({
+                            ip: clientIP,
+                            name: player.name
+                        });
 
-                        connectionsRef
-                            .child(keyHappyIP)
-                            .set({
-                                ip: clientIP,
-                                name: player.name
-                            });
-
-                        connectionsRef.onDisconnect().remove(
-                            error => {
-                                if (error) console.log('could not disconnect: ', error);
-                            })
-                    }
-                });
+                    connectionsRef.onDisconnect().remove(
+                        error => {
+                            if (error) console.log('could not disconnect: ', error);
+                        })
+                }
+            });
         })
         .then(_ => connectionsRef.on("value", snapshot => $("#watchers").text(snapshot.numChildren())))
         .then(_ => roomsRef.on("value", snapshot => console.log('rooms snapshot() ', snapshot.val())))
