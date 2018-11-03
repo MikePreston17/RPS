@@ -8,7 +8,12 @@
 	    float: left;
 	}
 
-	/* div.row {
-	    clear: both;
-	    float: left;
-	} */
+	.tab-pane {
+	    height: 300px;
+	    overflow-y: scroll;
+	    width: 100%;
+	}
+
+	span#chat-history {
+	    max-height: 200px;
+	}

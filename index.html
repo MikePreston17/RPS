@@ -43,23 +43,24 @@
             <div id="scoreboard" class="card">
                 <h3 id="player-choice"></h3>
                 <h3 id="opponent-choice"></h3>
-            </div>
-            <div class="row">
-                <button alt="rock"><i class="far fa-hand-rock" aria-hidden="true"></i></button>
-                <button alt="paper"><i class="far fa-hand-paper" aria-hidden="true"></i></button>
-                <button alt="scissors"><i class="far fa-hand-scissors" aria-hidden="true"></i></button>
+                <div class="container">
+                    <button alt="rock"><i class="far fa-hand-rock" aria-hidden="true"></i></button>
+                    <button alt="paper"><i class="far fa-hand-paper" aria-hidden="true"></i></button>
+                    <button alt="scissors"><i class="far fa-hand-scissors" aria-hidden="true"></i></button>
+                </div>
             </div>
         </div>
 
         <div id="chat" class="col-md-8">
+
+            <span class="tab-pane card" id="chat-history">
+                <!-- chat goes here -->
+            </span>
+
+            <label for=""><strong>Chat:</strong></label>
             <div class="card">
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis voluptatem vero
-                    asperiores
-                    minus
-                    minima esse nesciunt doloremque obcaecati amet quasi repudiandae, eius iusto voluptatibus
-                    repellat
-                    deleniti temporibus, ipsa repellendus? Eveniet.</p>
-                <textarea name="chatbox" id="" cols="30" rows="10"></textarea>
+
+                <textarea name="" id="chatbox" cols="30" rows="10"></textarea>
                 <button id="send" class="btn btn-submit">Send</button>
             </div>
         </div>
@@ -70,6 +71,12 @@
 
         <br> -->
 
+        <!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis voluptatem vero
+                    asperiores
+                    minus
+                    minima esse nesciunt doloremque obcaecati amet quasi repudiandae, eius iusto voluptatibus
+                    repellat
+                    deleniti temporibus, ipsa repellendus? Eveniet.</p> -->
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/5.5.6/firebase.js"></script>

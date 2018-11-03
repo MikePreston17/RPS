@@ -33,9 +33,8 @@ window.onload = init;
 function init() {
 
     $('#send').on('click', event => {
-        // event.defaultPrevented();
         event.preventDefault();
-        // send();
+        send();
     });
 
     getMyIP().then(result => {
@@ -56,7 +55,7 @@ function init() {
             clearChat(); //todo: remove before prod
 
             addPlayerToRoom(player, roomName);
-            addCPUToRoom(roomName);
+            // addCPUToRoom(roomName);
 
         }).then(_ => {
             // track connected user:
@@ -64,12 +63,13 @@ function init() {
 
                 if (snapshot.val() && clientIP) {
                     //Adding the user's IP address to prevent multiple tabs.
-                    let keyHappyIP = clientIP.replace(ipRegex, '_');
 
-                    console.table([clientIP, keyHappyIP]);
+                    let formattedIP = getFormattedIP(clientIP);
+
+                    console.table([clientIP, formattedIP]);
 
                     connectionsRef
-                        .child(keyHappyIP)
+                        .child(formattedIP)
                         .set({
                             ip: clientIP,
                             name: player.name
@@ -82,6 +82,14 @@ function init() {
                 }
             });
         })
+        .then(_ => chatRef.child('posts')
+            .orderByKey()
+            .on('child_added',
+                (chatshot) => console.log(">>> ", chatshot.val().message)))
+        .then(_ =>
+            chatRef.on("value", snapshot => {
+                console.log('chatshot:', snapshot.val());
+            }))
         .then(_ => connectionsRef.on("value", snapshot => $("#watchers").text(snapshot.numChildren())))
         .then(_ => roomsRef.on("value", snapshot => console.log('rooms snapshot() ', snapshot.val())))
 }
@@ -94,7 +102,11 @@ $(document).on('click', "button", function () {
     }
 
     var that = this;
-    player.Choice = $(that).attr("alt");
+    let alt = $(that).attr("alt");
+
+    if (!alt) return;
+
+    player.Choice = alt;
 
     $('#player-choice').text(`You chose ${player.Choice}`);
     player.hasChosen = true;
@@ -103,10 +115,29 @@ $(document).on('click', "button", function () {
     updatePlayer(player);
 })
 
-const speak = (message) => chatRef.child('posts').push({
-    playerIP: clientIP,
-    message,
-})
+const speak = async (message) => {
+    if (!message) return;
+
+    console.log('message: ', message);
+
+    chatRef.child('posts').push({
+        playerIP: clientIP,
+        message,
+    });
+
+    renderMessage(message);
+}
+
+const renderMessage = (message) => {
+
+    let div = $('<div>');
+    let label = $('<label>').text(`${player.name}:`).appendTo(div); //TODO: fetch the accompanying playerName from Firebase.
+
+    label.css("font-weight", "bold");
+
+    $('<p>').text(message).appendTo(div);
+    div.appendTo($('#chat-history'))
+}
 
 const updatePlayer = (player) => {
     if (!player.Choice) return;
@@ -130,7 +161,7 @@ const leaveRoom = () => {
 const addCPUToRoom = (roomName) => {
 
     var room = roomsRef.child(roomName);
-    let ip = getHappy('11.011.100.101');
+    let ip = getFormattedIP('11.011.100.101');
 
     room.child(ip)
         .set({
@@ -147,10 +178,14 @@ const addPlayerToRoom = (player, roomName) => {
         .set(player);
 }
 
-const send = async () => speak($('chatbox').val());
+const send = async () => {
+    let box = $('#chatbox');
+    speak(box.val());
+    box.val('');
+};
 const clearAllRooms = async () => roomsRef.remove();
 const clearChat = async () => chatRef.child('posts').remove();
 const getMyIP = async () => new Promise(resolve => $.getJSON('https://ipapi.co/json', data => resolve(data.ip)))
 var wait = ms => new Promise((r, j) => setTimeout(r, ms))
-const getHappy = ip => ip.replace(ipRegex, '_');
+const getFormattedIP = ip => ip.replace(ipRegex, '_');
 const random = (min, max, inclusive) => Promise.resolve(Math.floor(Math.random() * (max - min + (inclusive ? 1 : 0))) + min);
