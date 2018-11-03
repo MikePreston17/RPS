@@ -13,20 +13,25 @@ var config = {
 
 firebase.initializeApp(config);
 
-var database = firebase.database();
+var db = firebase.database();
 
-var connectionsRef = database.ref("/connections");
-var clientConnectionRef = database.ref(".info/connected");
+//References:
+var clients = db.ref(".info/connected"),
+    roomsRef = db.ref("rooms"),
+    connectionsRef = db.ref("/connections"),
+    clientConnectionRef = db.ref(".info/connected");
 
-var clientIP, clients, roomsRef, clientRef;
+var clientIP;
 var player = {};
+const ipRegex = /\./g;
+
+var chatRef;
 
 window.onload = init;
 
 const roomName = "tinytiger";
 
 function init() {
-
 
     getMyIPAsync().then(result => {
 
@@ -47,9 +52,9 @@ function init() {
             addPlayerToRoom(player, roomName);
             addCPUToRoom(roomName);
 
-        }).then(() => {
+        }).then(_ => {
             // track connected user:
-            clients = database.ref(".info/connected")
+            clients
                 .on("value", snapshot => {
 
                     if (snapshot.val() && clientIP) {
@@ -58,9 +63,9 @@ function init() {
 
                         // var connection = connectionsRef.push({
                         //     uip: clientIP
-                        // });                
+                        // });
 
-                        let keyHappyIP = clientIP.replace(/\./g, '_');
+                        let keyHappyIP = clientIP.replace(ipRegex, '_');
                         console.log('key: ', keyHappyIP);
 
                         connectionsRef
@@ -77,12 +82,22 @@ function init() {
                     }
                 });
         })
-        .then(() => connectionsRef.on("value", snapshot => $("#watchers").text(snapshot.numChildren())))
-        .then(() => {
-            // On rooms updated:
-            roomsRef = database.ref("rooms").on("value", snapshot => console.log('rooms snapshot() ', snapshot.val()))
-        }).then(() => {
-            // clientRef = database.ref(`${clientIP}`);            
+        .then(_ => connectionsRef.on("value", snapshot => $("#watchers").text(snapshot.numChildren())))
+        .then(_ => roomsRef.on("value", snapshot => console.log('rooms snapshot() ', snapshot.val())))
+        .then(_ => {
+
+            chatRef = db.ref("chat");
+
+            if (chatRef) return; //return if the chatroom already exists.
+
+            chatRef.set({
+                posts: 5,
+            })
+
+            chatRef.child('posts').push({
+                playerIP: clientIP,
+                message: "'sup?",
+            })
         })
 }
 
@@ -105,12 +120,12 @@ $(document).on('click', "button", function () {
 
 
 const updatePlayer = (player) => {
-    let room = database.ref('rooms').child(roomName);
-    let c = clientIP.replace(/\./g, '_');
+    let room = roomsRef.child(roomName);
+    let c = clientIP.replace(ipRegex, '_');
     console.log('child: ', c);
-    let p = room.child(c);
-    console.log('p: ', p);
-    p.update(player);
+    let playerRef = room.child(c);
+    console.log('player ref: ', playerRef);
+    playerRef.update(player);
 }
 
 const addCPUToRoom = (roomName) => {
