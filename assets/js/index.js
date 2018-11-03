@@ -82,11 +82,7 @@ function init() {
 
             chatRef = db.ref("chat");
 
-            if (chatRef) return; //return if the chatroom already exists.
-
-            chatRef.set({
-                posts: 5,
-            })
+            // if (chatRef.key) return; //return if the chatroom already exists.
 
             chatRef.child('posts').push({
                 playerIP: clientIP,
