@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Firebase RPS</title>
+    <title>Firey RPS!</title>
 
     <!-- fontawesome -->
 
@@ -35,11 +35,33 @@
 
 <body>
 
-    <div id="main" class="container">
-        <div id="scoreboard" class="jumbotron">
-            <h1>Firey RPS!</h1>
-            <h3 id="player-choice"></h3>
-            <h3 id="opponent-choice"></h3>
+    <div id="main" class="container row">
+        <div class="col-sm">
+            <div id="scoreboard" class="jumbotron">
+                <h1>Firey RPS!</h1>
+            </div>
+            <div id="scoreboard" class="card">
+                <h3 id="player-choice"></h3>
+                <h3 id="opponent-choice"></h3>
+            </div>
+            <div class="row">
+                <button alt="rock"><i class="far fa-hand-rock" aria-hidden="true"></i></button>
+                <button alt="paper"><i class="far fa-hand-paper" aria-hidden="true"></i></button>
+                <button alt="scissors"><i class="far fa-hand-scissors" aria-hidden="true"></i></button>
+            </div>
+        </div>
+
+        <div id="chat" class="col-md-8">
+            <div class="card">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis voluptatem vero
+                    asperiores
+                    minus
+                    minima esse nesciunt doloremque obcaecati amet quasi repudiandae, eius iusto voluptatibus
+                    repellat
+                    deleniti temporibus, ipsa repellendus? Eveniet.</p>
+                <textarea name="chatbox" id="" cols="30" rows="10"></textarea>
+                <button id="send" class="btn btn-submit">Send</button>
+            </div>
         </div>
 
         <!-- <button><i class="fas fa-hand-rock" aria-hidden="true"></i></button>
@@ -48,26 +70,11 @@
 
         <br> -->
 
-        <button alt="rock"><i class="far fa-hand-rock" aria-hidden="true"></i></button>
-        <button alt="paper"><i class="far fa-hand-paper" aria-hidden="true"></i></button>
-        <button alt="scissors"><i class="far fa-hand-scissors" aria-hidden="true"></i></button>
-
-        <script src="https://www.gstatic.com/firebasejs/5.5.6/firebase.js"></script>
-
-        <script src="assets/js/index.js"></script>
-
-        <div id="chat" class="col-md-8">
-            <div class="card">
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis voluptatem vero asperiores minus
-                    minima esse nesciunt doloremque obcaecati amet quasi repudiandae, eius iusto voluptatibus repellat
-                    deleniti temporibus, ipsa repellendus? Eveniet.</p>
-
-                <textarea name="chatbox" id="" cols="30" rows="10"></textarea>
-                <button id="send" class="btn btn-submit">Send</button>
-            </div>
-        </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/5.5.6/firebase.js"></script>
+
+    <script src="assets/js/index.js"></script>
 
 </body>
 
