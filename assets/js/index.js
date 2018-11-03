@@ -19,21 +19,26 @@ var db = firebase.database();
 var clients = db.ref(".info/connected"),
     roomsRef = db.ref("rooms"),
     connectionsRef = db.ref("/connections"),
-    clientConnectionRef = db.ref(".info/connected");
+    clientConnectionRef = db.ref(".info/connected"),
+    chatRef = db.ref("chat");
 
 var clientIP;
 var player = {};
-const ipRegex = /\./g;
 
-var chatRef;
+const ipRegex = /\./g;
+const roomName = "tinytiger";
 
 window.onload = init;
 
-const roomName = "tinytiger";
-
 function init() {
 
-    getMyIPAsync().then(result => {
+    $('#send').on('click', event => {
+        // event.defaultPrevented();
+        event.preventDefault();
+        // send();
+    });
+
+    getMyIP().then(result => {
 
             clientIP = result;
             // player.clientIP = result;
@@ -48,6 +53,7 @@ function init() {
             }
 
             clearAllRooms(); //todo: remove before prod
+            clearChat(); //todo: remove before prod
 
             addPlayerToRoom(player, roomName);
             addCPUToRoom(roomName);
@@ -78,17 +84,6 @@ function init() {
         })
         .then(_ => connectionsRef.on("value", snapshot => $("#watchers").text(snapshot.numChildren())))
         .then(_ => roomsRef.on("value", snapshot => console.log('rooms snapshot() ', snapshot.val())))
-        .then(_ => {
-
-            chatRef = db.ref("chat");
-
-            // if (chatRef.key) return; //return if the chatroom already exists.
-
-            chatRef.child('posts').push({
-                playerIP: clientIP,
-                message: "'sup?",
-            })
-        })
 }
 
 $(document).on('click', "button", function () {
@@ -108,25 +103,21 @@ $(document).on('click', "button", function () {
     updatePlayer(player);
 })
 
+const speak = (message) => chatRef.child('posts').push({
+    playerIP: clientIP,
+    message,
+})
 
 const updatePlayer = (player) => {
+    if (!player.Choice) return;
+
     let room = roomsRef.child(roomName);
     let c = clientIP.replace(ipRegex, '_');
     console.log('child: ', c);
     let playerRef = room.child(c);
     console.log('player ref: ', playerRef);
+    console.log(player);
     playerRef.update(player);
-}
-
-const addCPUToRoom = (roomName) => {
-    var cpuRef = firebase.database().ref('rooms/' + roomName)
-        // .set(
-        .push({
-            id: '11.011.100.101',
-            name: "CPU",
-            choice: null,
-        });
-    console.log('cpu ref: ', cpuRef);
 }
 
 const leaveRoom = () => {
@@ -136,17 +127,30 @@ const leaveRoom = () => {
         .remove();
 }
 
-const addPlayerToRoom = (user, roomName) => firebase.database().ref('rooms/' + roomName).push(user);
+const addCPUToRoom = (roomName) => {
 
-const clearAllRooms = async () => firebase.database().ref('rooms').remove();
+    var room = roomsRef.child(roomName);
+    let ip = getHappy('11.011.100.101');
 
-const getMyIPAsync = async () => await getMyIP();
+    room.child(ip)
+        .set({
+            ip,
+            name: "CPU"
+        });
+}
 
-const getMyIP = () => new Promise((resolve, reject) => $.getJSON('https://ipapi.co/json', data => resolve(data.ip)))
+const addPlayerToRoom = (player, roomName) => {
+    var room = roomsRef.child(roomName);
+    let keyHappyIP = clientIP.replace(ipRegex, '_');
 
-var wait = ms => new Promise((r, j) => {
-    setTimeout(r, ms)
-})
+    room.child(keyHappyIP)
+        .set(player);
+}
 
-const random = (min, max, inclusive) =>
-    Promise.resolve(Math.floor(Math.random() * (max - min + (inclusive ? 1 : 0))) + min);
+const send = async () => speak($('chatbox').val());
+const clearAllRooms = async () => roomsRef.remove();
+const clearChat = async () => chatRef.child('posts').remove();
+const getMyIP = async () => new Promise(resolve => $.getJSON('https://ipapi.co/json', data => resolve(data.ip)))
+var wait = ms => new Promise((r, j) => setTimeout(r, ms))
+const getHappy = ip => ip.replace(ipRegex, '_');
+const random = (min, max, inclusive) => Promise.resolve(Math.floor(Math.random() * (max - min + (inclusive ? 1 : 0))) + min);
