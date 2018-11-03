@@ -188,7 +188,13 @@ function removePlayer(playerName) {
 }
 
 const speak = async (message) => {
+
     if (!message) return;
+
+    if (message === "dev:clear-chat") {
+        clearChat();
+        return;
+    }
 
     console.log('message: ', message);
 
@@ -214,21 +220,20 @@ const updatePlayer = (player) => {
     if (!player.Choice) return;
 
     let currentRoom = roomsRef.child(room.name);
-    // let c = player.ip.replace(ipRegex, '_');
-    //   console.log('child: ', c);
     let playerRef = currentRoom.child(player.name);
-    // console.log('player ref: ', playerRef);
-    console.log(player);
+    // console.log(player);
     playerRef.update(player);
 }
 
 const addPlayerToRoom = (player, roomName) => {
 
     //todo: check number of players in room by how many children on the room's key.
-
     // if 0 or 1 already, add.
     // if 2, find new room.
+    // console.log('', roomsRef.child(roomName).val());
 
+    let ref = roomsRef.child(roomName)
+    ref.once("value").then(s => console.log(s.val()))
 
     roomsRef.child(roomName)
         .child(player.name)
