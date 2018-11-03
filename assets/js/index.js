@@ -46,7 +46,7 @@ function init() {
     var clientIP;
 
     //Send chat message:
-    $('#send').on('click', event => {
+    $('#send').on('click', function (event) {
         event.preventDefault();
         send();
     });
@@ -202,7 +202,7 @@ const speak = async (message) => {
 const renderMessage = (post) => {
 
     let div = $('<div>');
-    let label = $('<label>').text(`${player.name}:`).appendTo(div); //TODO: fetch the accompanying playerName from Firebase.
+    let label = $('<label>').text(`${post.playerName}:`).appendTo(div); //TODO: fetch the accompanying playerName from Firebase.
 
     label.css("font-weight", "bold");
 
