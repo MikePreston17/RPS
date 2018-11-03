@@ -189,12 +189,12 @@ const renderMessage = (message) => {
 
 const updatePlayer = (player) => {
     if (!player.Choice) return;
-    console.log('g: room: ', room);
-    let room = roomsRef.child(room);
-    let c = clientIP.replace(ipRegex, '_');
-    console.log('child: ', c);
-    let playerRef = room.child(c);
-    console.log('player ref: ', playerRef);
+
+    let r = roomsRef.child(room.name);
+    let c = player.ip.replace(ipRegex, '_');
+    //   console.log('child: ', c);
+    let playerRef = r.child(c);
+    // console.log('player ref: ', playerRef);
     console.log(player);
     playerRef.update(player);
 }
@@ -228,7 +228,7 @@ const addPlayerToRoom = (player, roomName) => {
     var room = roomsRef.child(roomName);
     let keyHappyIP = player.ip.replace(ipRegex, '_');
 
-    room.child(keyHappyIP)
+    room.child(player.name)
         .set(player);
 }
 
@@ -241,7 +241,7 @@ const send = async () => {
 const clearAllRooms = async () => roomsRef.remove();
 const clearChat = async () => chatRef.child('posts').remove();
 const getMyIP = async () => new Promise(resolve => $.getJSON('https://ipapi.co/json', data => resolve(data.ip)))
-var wait = ms => new Promise((r, j) => setTimeout(r, ms))
+
 const getFormattedIP = ip => ip.replace(ipRegex, '_');
 
 const randomInt = (min, max, inclusive) => Promise.resolve(Math.floor(Math.random() * (max - min + (inclusive ? 1 : 0))) + min);
