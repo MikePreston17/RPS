@@ -13,7 +13,6 @@ var config = {
 
 firebase.initializeApp(config);
 
-
 var db = firebase.database();
 
 //References:
@@ -28,15 +27,7 @@ var room = {}
 
 const ipRegex = /\./g;
 
-var nouns = ["leopard", "otter", "puma", "tiger", "snake", "mongoose", "unicorn", "pirahna"]
-var adjectives = ["sparkling", "orange", "unruly", "leaping", "pink", "mangy", "tiny"]
-
-const range = (start, end) => [...Array(1 + end - start).keys()].map(v => start + v)
-const random = items => items[Math.floor(Math.random() * items.length)];
-const createName = _ => random(adjectives) + random(nouns);
-
-room.name = createName() + random(range(1, 9));
-// room.name = "tinytiger";
+room.name = "tinytiger1" //createName() + random(range(1, 9));
 
 window.onload = init;
 
@@ -165,7 +156,7 @@ function renderNameEntryForm() {
             <input id="name-input" type="text">
         </form> 
     </div>
-    `;
+        `;
 
     let div = $('div').html(html);
     div.appendTo($('#scoreboard'));
@@ -198,7 +189,7 @@ const renderMessage = (message) => {
 
 const updatePlayer = (player) => {
     if (!player.Choice) return;
-
+    console.log('g: room: ', room);
     let room = roomsRef.child(room);
     let c = clientIP.replace(ipRegex, '_');
     console.log('child: ', c);
