@@ -239,12 +239,6 @@ const addPlayerToRoom = (player, roomName) => {
     roomsRef.child(roomName)
         .child(player.name)
         .push(player);
-
-    playerCount++;
-
-    roomsRef.update({
-        players: playerCount,
-    })
 }
 
 const send = async () => {
