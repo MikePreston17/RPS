@@ -30,27 +30,31 @@
     <!-- My styles -->
     <link rel="stylesheet" href="assets/css/style.css">
 
-
 </head>
 
 <body>
 
     <div id="main" class="container row">
         <div class="col-sm">
+            <h3 id="player-name"></h3>
             <div id="scoreboard" class="jumbotron">
                 <h1>Firey RPS!</h1>
-            </div>
-            <div id="scoreboard" class="card">
-                <h3 id="player-choice"></h3>
-                <h3 id="opponent-choice"></h3>
-                <div class="container">
-                    <button alt="rock"><i class="far fa-hand-rock" aria-hidden="true"></i></button>
-                    <button alt="paper"><i class="far fa-hand-paper" aria-hidden="true"></i></button>
-                    <button alt="scissors"><i class="far fa-hand-scissors" aria-hidden="true"></i></button>
+                <br>
+                <!-- todo: hide this until the name is input -->
+                <div id="choices">
+                    <h3 id="player-choice"></h3>
+                    <h3 id="opponent-choice"></h3>
+                    <div class="container">
+                        <button alt="rock"><i class="far fa-hand-rock" aria-hidden="true"></i></button>
+                        <button alt="paper"><i class="far fa-hand-paper" aria-hidden="true"></i></button>
+                        <button alt="scissors"><i class="far fa-hand-scissors" aria-hidden="true"></i></button>
+                    </div>
+
                 </div>
             </div>
         </div>
 
+        <!-- todo: hide this until the name is input -->
         <div id="chat" class="col-md-8">
 
             <span class="tab-pane card" id="chat-history">
@@ -81,6 +85,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/5.5.6/firebase.js"></script>
 
+    <script src="assets/js/utils.js"></script>
     <script src="assets/js/index.js"></script>
 
 </body>

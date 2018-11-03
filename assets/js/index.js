@@ -13,6 +13,7 @@ var config = {
 
 firebase.initializeApp(config);
 
+
 var db = firebase.database();
 
 //References:
@@ -22,15 +23,35 @@ var clients = db.ref(".info/connected"),
     clientConnectionRef = db.ref(".info/connected"),
     chatRef = db.ref("chat");
 
-var clientIP;
 var player = {};
+var room = {}
 
 const ipRegex = /\./g;
-const roomName = "tinytiger";
+
+var nouns = ["leopard", "otter", "puma", "tiger", "snake", "mongoose", "unicorn", "pirahna"]
+var adjectives = ["sparkling", "orange", "unruly", "leaping", "pink", "mangy", "tiny"]
+
+const range = (start, end) => [...Array(1 + end - start).keys()].map(v => start + v)
+const random = items => items[Math.floor(Math.random() * items.length)];
+const createName = _ => random(adjectives) + random(nouns);
+
+room.name = createName() + random(range(1, 9));
+// room.name = "tinytiger";
 
 window.onload = init;
 
+var opponentWins, playerWins;
+var opponentChoice;
+
+// 1. Finish the remove user from room.
+// 2. Determine winner.
+// 3. Random Usernames
+// 4. prevent username collision
+// 5. 
+
 function init() {
+
+    var clientIP;
 
     $('#send').on('click', event => {
         event.preventDefault();
@@ -40,13 +61,13 @@ function init() {
     getMyIP().then(result => {
 
             clientIP = result;
-            // player.clientIP = result;
 
             console.log('client ip: ', clientIP);
 
-            // var 
+            let playerName = createName();
+
             player = {
-                name: "Michael",
+                name: playerName,
                 ip: clientIP,
                 Choice: null,
             }
@@ -54,7 +75,7 @@ function init() {
             // clearAllRooms(); //todo: remove before prod
             // clearChat(); //todo: remove before prod
 
-            addPlayerToRoom(player, roomName);
+            addPlayerToRoom(player, room.name);
             // addCPUToRoom(roomName);
 
         }).then(_ => {
@@ -90,7 +111,25 @@ function init() {
             chatRef.on("value", snapshot => {
                 console.log('chatshot:', snapshot.val());
             }))
-        .then(_ => connectionsRef.on("value", snapshot => $("#watchers").text(snapshot.numChildren())))
+
+        .then(_ => {
+            connectionsRef.on("value", snapshot => $("#watchers").text(snapshot.numChildren()))
+        })
+        .then(_ => {
+            let currentRoom = roomsRef.child(room.name)
+            currentRoom.on('value', snapshot => room.playerCount = snapshot.numChildren())
+            currentRoom.on('child_added', snapshot => {
+
+                let ip = snapshot.val();
+                console.log('player entered: ', ip);
+
+                if (room.playerCount > 1 || ip !== player.ip) {
+
+
+                }
+            })
+
+        })
         .then(_ => roomsRef.on("value", snapshot => console.log('rooms snapshot() ', snapshot.val())))
 }
 
@@ -115,13 +154,31 @@ $(document).on('click', "button", function () {
     updatePlayer(player);
 })
 
+function renderNameEntryForm() {
+    //<!-- TODO: only enable this once IFF the user's IP cannot be found in the database -->
+    let html =
+        ` 
+    <div>
+        <form action="" id="name-form">
+        <h2 id="name-entry-header"> Enter your name here: </h2>
+            <label for=""></label>
+            <input id="name-input" type="text">
+        </form> 
+    </div>
+    `;
+
+    let div = $('div').html(html);
+    div.appendTo($('#scoreboard'));
+
+}
+
 const speak = async (message) => {
     if (!message) return;
 
     console.log('message: ', message);
 
     chatRef.child('posts').push({
-        playerIP: clientIP,
+        playerIP: player.ip,
         message,
     });
 
@@ -142,7 +199,7 @@ const renderMessage = (message) => {
 const updatePlayer = (player) => {
     if (!player.Choice) return;
 
-    let room = roomsRef.child(roomName);
+    let room = roomsRef.child(room);
     let c = clientIP.replace(ipRegex, '_');
     console.log('child: ', c);
     let playerRef = room.child(c);
@@ -171,8 +228,14 @@ const addCPUToRoom = (roomName) => {
 }
 
 const addPlayerToRoom = (player, roomName) => {
+
+    //todo: check number of players in room by how many children on the room's key.
+    roomsRef.child(roomName)
+    // if 0 or 1 already, add.
+    // if 2, find new room.
+
     var room = roomsRef.child(roomName);
-    let keyHappyIP = clientIP.replace(ipRegex, '_');
+    let keyHappyIP = player.ip.replace(ipRegex, '_');
 
     room.child(keyHappyIP)
         .set(player);
@@ -183,9 +246,11 @@ const send = async () => {
     speak(box.val());
     box.val('');
 };
+
 const clearAllRooms = async () => roomsRef.remove();
 const clearChat = async () => chatRef.child('posts').remove();
 const getMyIP = async () => new Promise(resolve => $.getJSON('https://ipapi.co/json', data => resolve(data.ip)))
 var wait = ms => new Promise((r, j) => setTimeout(r, ms))
 const getFormattedIP = ip => ip.replace(ipRegex, '_');
-const random = (min, max, inclusive) => Promise.resolve(Math.floor(Math.random() * (max - min + (inclusive ? 1 : 0))) + min);
+
+const randomInt = (min, max, inclusive) => Promise.resolve(Math.floor(Math.random() * (max - min + (inclusive ? 1 : 0))) + min);
