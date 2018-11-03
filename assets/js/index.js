@@ -26,6 +26,7 @@ var player = {};
 var opponent = {};
 var room = {}
 
+var playerCount = 0;
 const ipRegex = /\./g;
 
 room.name = "tinytiger1" //createName() + random(range(1, 9));
@@ -233,11 +234,17 @@ const addPlayerToRoom = (player, roomName) => {
     // console.log('', roomsRef.child(roomName).val());
 
     let ref = roomsRef.child(roomName)
-    ref.once("value").then(s => console.log(s.val()))
+    ref.once("value").then(s => console.log("i'm special: ", s.val()))
 
     roomsRef.child(roomName)
         .child(player.name)
         .push(player);
+
+    playerCount++;
+
+    roomsRef.update({
+        players: playerCount,
+    })
 }
 
 const send = async () => {
