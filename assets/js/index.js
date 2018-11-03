@@ -51,10 +51,6 @@ function init() {
         send();
     });
 
-    // $(document.ready(function () {
-    //     $(window).unload(_ => playerExits());
-    // }));
-
     getMyIP().then(result => {
 
             clientIP = result;
@@ -98,9 +94,6 @@ function init() {
                             if (error) console.log('could not disconnect: ', error);
                         }
                     )
-
-                    //find ref to the current player and remove him.
-
                 }
             });
         })
@@ -108,16 +101,31 @@ function init() {
             .orderByKey()
             .on('child_added',
                 (chatshot) => {
-                    let msg = chatshot.val().message;
-                    console.log(">>> ", msg)
+                    const post = {
+                        message,
+                        playerIP,
+                        playerName,
+                    } = chatshot.val();
+
+                    // console.log(">>> ", message)
+                    console.table([message, playerIP, playerName])
+                    renderMessage(post);
 
                     //if ips/username of poster does not match yours ,then mark with opponent's name.
 
                 }))
-        .then(_ =>
-            chatRef.on("value", snapshot => {
-                // console.log('chatshot:', snapshot.val());
-            }))
+        // .then(_ =>
+        //     chatRef.on("child_added", snapshot => {
+        //         console.log('chatshot:', snapshot.val());
+        //         let posts = snapshot.child('posts').val();
+        //         console.log('posts:', posts);
+
+
+        //         posts.foreach(post => {
+        //             console.log('Post: ', post);
+        //         });
+
+        //     }))
 
         .then(_ => {
             connectionsRef.on("value", snapshot => $("#watchers").text(snapshot.numChildren()))
@@ -131,10 +139,10 @@ function init() {
                 //TODO: on NEW child added,
                 let playerIP = nextPlayer.val();
 
-                console.log({
-                    playerIP,
-                    numPlayers: room.playerCount,
-                });
+                // console.log({
+                //     playerIP,
+                //     numPlayers: room.playerCount,
+                // });
 
                 if (room.playerCount > 1 || playerIP !== player.ip) {
                     opponent.ip = playerIP;
@@ -171,27 +179,10 @@ $(document).on('click', "button", function () {
     updatePlayer(player);
 })
 
-function playerExits() {
-    let currentRoom = roomsRef.child(room.name);
-    currentRoom.child(player.name).remove(); //remove this player from the room.
-}
-
-function renderNameEntryForm() {
-    //<!-- TODO: only enable this once IFF the user's IP cannot be found in the database -->
-    let html =
-        ` 
-    <div>
-        <form action="" id="name-form">
-        <h2 id="name-entry-header"> Enter your name here: </h2>
-            <label for=""></label>
-            <input id="name-input" type="text">
-        </form> 
-    </div>
-        `;
-
-    let div = $('div').html(html);
-    div.appendTo($('#scoreboard'));
-
+function removePlayer(playerName) {
+    roomsRef.child(room.name)
+        .child(playerName)
+        .remove();
 }
 
 const speak = async (message) => {
@@ -202,19 +193,18 @@ const speak = async (message) => {
     chatRef.child('posts').push({
         playerIP: player.ip,
         message,
+        playerName: player.name,
     });
-
-    renderMessage(message);
 }
 
-const renderMessage = (message) => {
+const renderMessage = (post) => {
 
     let div = $('<div>');
     let label = $('<label>').text(`${player.name}:`).appendTo(div); //TODO: fetch the accompanying playerName from Firebase.
 
     label.css("font-weight", "bold");
 
-    $('<p>').text(message).appendTo(div);
+    $('<p>').text(post.message).appendTo(div);
     div.appendTo($('#chat-history'))
 }
 
@@ -230,25 +220,6 @@ const updatePlayer = (player) => {
     playerRef.update(player);
 }
 
-const leaveRoom = () => {
-    firebase.database()
-        .ref("connections/")
-        .child(`${clientIP}`)
-        .remove();
-}
-
-const addCPUToRoom = (roomName) => {
-
-    var room = roomsRef.child(roomName);
-    let ip = getFormattedIP('11.011.100.101');
-
-    room.child(ip)
-        .set({
-            ip,
-            name: "CPU"
-        });
-}
-
 const addPlayerToRoom = (player, roomName) => {
 
     //todo: check number of players in room by how many children on the room's key.
@@ -257,7 +228,7 @@ const addPlayerToRoom = (player, roomName) => {
     // if 2, find new room.
 
     var room = roomsRef.child(roomName);
-    let keyHappyIP = player.ip.replace(ipRegex, '_');
+    // let keyHappyIP = player.ip.replace(ipRegex, '_');
 
     room.child(player.name)
         .set(player);
@@ -268,8 +239,6 @@ const send = async () => {
     speak(box.val());
     box.val('');
 };
-
-
 
 const clearAllRooms = async () => roomsRef.remove();
 const clearChat = async () => chatRef.child('posts').remove();
