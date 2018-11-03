@@ -23,6 +23,7 @@ var clients = db.ref(".info/connected"),
     chatRef = db.ref("chat");
 
 var player = {};
+var opponent = {};
 var room = {}
 
 const ipRegex = /\./g;
@@ -53,7 +54,7 @@ function init() {
 
             clientIP = result;
 
-            console.log('client ip: ', clientIP);
+            // console.log('client ip: ', clientIP);
 
             let playerName = createName();
 
@@ -78,10 +79,10 @@ function init() {
 
                     let formattedIP = getFormattedIP(clientIP);
 
-                    console.table([clientIP, formattedIP]);
+                    // console.table([clientIP, formattedIP]);
 
                     connectionsRef
-                        .child(formattedIP)
+                        .child(player.name)
                         .set({
                             ip: clientIP,
                             name: player.name
@@ -91,16 +92,26 @@ function init() {
                         error => {
                             if (error) console.log('could not disconnect: ', error);
                         })
+
+                    roomsRef.child(player.name).onDisconnect().update({
+                        status: "rq"
+                    })
                 }
             });
         })
         .then(_ => chatRef.child('posts')
             .orderByKey()
             .on('child_added',
-                (chatshot) => console.log(">>> ", chatshot.val().message)))
+                (chatshot) => {
+                    let msg = chatshot.val().message;
+                    console.log(">>> ", msg)
+
+                    //if ips/username of poster does not match yours ,then mark with opponent's name.
+
+                }))
         .then(_ =>
             chatRef.on("value", snapshot => {
-                console.log('chatshot:', snapshot.val());
+                // console.log('chatshot:', snapshot.val());
             }))
 
         .then(_ => {
@@ -109,14 +120,21 @@ function init() {
         .then(_ => {
             let currentRoom = roomsRef.child(room.name)
             currentRoom.on('value', snapshot => room.playerCount = snapshot.numChildren())
-            currentRoom.on('child_added', snapshot => {
+            currentRoom.on('child_added', nextPlayer => {
 
-                let ip = snapshot.val();
-                console.log('player entered: ', ip);
+                console.log('next player: ', nextPlayer.val());
+                //TODO: on NEW child added,
+                let playerIP = nextPlayer.val();
+                console.log({
+                    playerIP,
+                    numPlayers: room.playerCount,
+                });
 
-                if (room.playerCount > 1 || ip !== player.ip) {
-
-
+                if (room.playerCount > 1 || playerIP !== player.ip) {
+                    opponent.ip = playerIP;
+                    opponent.name = nextPlayer.val().name;
+                } else if (room.playerCount == 1) {
+                    // opponent.ip = ?
                 }
             })
 
