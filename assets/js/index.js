@@ -24,12 +24,12 @@ var clients = db.ref(".info/connected"),
 
 var player = {};
 var opponent = {};
-var room = {}
+var playerRoom = {}
 
 var playerCount = 0;
 const ipRegex = /\./g;
 
-room.name = "tinytiger1" //createName() + random(range(1, 9));
+playerRoom.name = "tinytiger1" //createName() + random(range(1, 9));
 
 window.onload = init;
 
@@ -60,7 +60,7 @@ function init() {
 
             let playerName = sessionStorage.getItem("name") || createName();
             sessionStorage.setItem('name', playerName)
-            console.log('ls: ', sessionStorage);
+            // console.log('ls: ', sessionStorage);
 
             player = {
                 name: playerName,
@@ -71,7 +71,7 @@ function init() {
             // clearAllRooms(); //todo: remove before prod
             // clearChat(); //todo: remove before prod
 
-            addPlayerToRoom(player, room.name);
+            addPlayerToRoom(player, playerRoom.name);            
             // addCPUToRoom(roomName);
 
         }).then(_ => {
@@ -129,33 +129,36 @@ function init() {
         //         });
 
         //     }))
-
         .then(_ => {
             connectionsRef.on("value", snapshot => $("#watchers").text(snapshot.numChildren()))
         })
-        .then(_ => {
-            let currentRoom = roomsRef.child(room.name)
-            currentRoom.on('value', snapshot => room.playerCount = snapshot.numChildren())
-            currentRoom.on('child_added', nextPlayer => {
+        .then(_ => roomsRef.child(playerRoom.name).on("value", room => console.log('players: ', room.val())))
 
-                // console.log('next player: ', nextPlayer.val());
-                //TODO: on NEW child added,
-                let playerIP = nextPlayer.val();
+        // .then(_ => {
+        //     let currentRoom = roomsRef.child(room.name)
+        //     console.log('currentroom ref:', currentRoom);
 
-                // console.log({
-                //     playerIP,
-                //     numPlayers: room.playerCount,
-                // });
+        //     currentRoom.on('value', snapshot => room.playerCount = snapshot.numChildren())
+        //     currentRoom.on('child_added', nextPlayer => {
 
-                if (room.playerCount > 1 || playerIP !== player.ip) {
-                    opponent.ip = playerIP;
-                    opponent.name = nextPlayer.val().name;
-                } else if (room.playerCount == 1) {
-                    // opponent.ip = ?
-                }
-            })
+        //         // console.log('next player: ', nextPlayer.val());
+        //         //TODO: on NEW child added,
+        //         let playerIP = nextPlayer.val();
 
-        })
+        //         // console.log({
+        //         //     playerIP,
+        //         //     numPlayers: room.playerCount,
+        //         // });
+
+        //         if (room.playerCount > 1 || playerIP !== player.ip) {
+        //             opponent.ip = playerIP;
+        //             opponent.name = nextPlayer.val().name;
+        //         } else if (room.playerCount == 1) {
+        //             // opponent.ip = ?
+        //         }
+        //     })
+
+        // })
         .then(_ => roomsRef.on("value", snapshot => console.log('rooms snapshot() ', snapshot.val())))
 }
 
@@ -183,7 +186,7 @@ $(document).on('click', "button", function () {
 })
 
 function removePlayer(playerName) {
-    roomsRef.child(room.name)
+    roomsRef.child(playerRoom.name)
         .child(playerName)
         .remove();
 }
@@ -220,7 +223,7 @@ const renderMessage = (post) => {
 const updatePlayer = (player) => {
     if (!player.Choice) return;
 
-    let currentRoom = roomsRef.child(room.name);
+    let currentRoom = roomsRef.child(playerRoom.name);
     let playerRef = currentRoom.child(player.name);
     // console.log(player);
     playerRef.update(player);
@@ -237,7 +240,6 @@ const addPlayerToRoom = (player, roomName) => {
     ref.once("value").then(s => console.log("i'm special: ", s.val()))
 
     roomsRef.child(roomName)
-        .child(player.name)
         .push(player);
 }
 
